@@ -52,17 +52,15 @@ function App() {
   }
 
   function deleteNote(id) {
-    // 1. Find the Note's real database ID
-    const noteToDelete = notes[id];
-    const dbId = noteToDelete.id;
+    // 1. Optimistic UI: Remove from Screen immediately
+    // We filter out the note where the note.id matches the id we clicked
+    setNotes((prevNotes) => {
+      return prevNotes.filter((noteItem) => noteItem.id !== id);
+    });
 
-    // 2. Remove from Screen
-    setNotes((prev) => prev.filter((item, index) => index !== id));
-
-    // 3. Remove from Database
-    if (dbId) {
-      axios.delete(`${API_URL}/notes/${dbId}`, authHeader);
-    }
+    // 2. Send Delete Request to Database
+    axios.delete(`${API_URL}/notes/${id}`, authHeader)
+      .catch((err) => console.log("Error deleting note", err));
   }
 
   // EDIT NOTE FUNCTION

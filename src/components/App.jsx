@@ -39,16 +39,26 @@ function App() {
   }
 
   function addNote(newNote) {
-    // Optimistic UI: Update screen instantly
-    setNotes((prev) => [...prev, newNote]);
+    // 1. Create a temporary ID (so React has a valid key immediately)
+    const tempId = Date.now(); 
+    const optimisticNote = { ...newNote, id: tempId };
 
-    // Send to Database
+    // 2. Add to UI (React uses tempId as the key)
+    setNotes((prev) => [...prev, optimisticNote]);
+
+    // 3. Send to Server
     axios.post(`${API_URL}/notes`, newNote, authHeader)
       .then((res) => {
-        // Replace the temporary note with the real one (including ID)
-        setNotes((prev) => prev.map(n => n === newNote ? res.data : n));
+        // 4. When server responds, SWAP the tempId with the real DB id
+        setNotes((prev) => prev.map(n => {
+           // If this is our temporary note, update it with real data
+           return n.id === tempId ? res.data : n;
+        }));
       })
-      .catch((err) => console.log("Error saving note"));
+      .catch((err) => {
+        console.log("Error saving note", err);
+        setNotes(prev => prev.filter(n => n.id !== tempId));
+      });
   }
 
   function deleteNote(id) {

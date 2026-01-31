@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { motion } from "framer-motion";
 import EditIcon from "@mui/icons-material/Edit"; // Import Pencil Icon
 import SaveIcon from "@mui/icons-material/Save"; // Import Save Icon
 
@@ -34,7 +35,14 @@ function Note(props) {
   }
 
   return (
-    <div className={`note ${isEditing ? "editing" : ""}`}>
+    <motion.div
+  layout
+  initial={{ opacity: 0, scale: 0.8 }}
+  animate={{ opacity: 1, scale: 1 }}
+  exit={{ opacity: 0, scale: 0.5 }}
+  transition={{ type: "spring", stiffness: 500, damping: 30 }} // Snappy but smooth
+  className={`note ${isEditing ? "editing" : ""}`}
+>
       {isEditing ? (
         // --- EDIT MODE ---
         <div>
@@ -43,40 +51,36 @@ function Note(props) {
             value={note.title} 
             onChange={handleChange} 
             className="edit-input" 
-            autoFocus
+            autoFocus 
           />
           <textarea 
             name="content" 
             value={note.content} 
             onChange={handleChange} 
-            rows="3"
             className="edit-textarea"
           />
-          <button onClick={handleSave} style={{ color: "#4caf50" }}>
-            <SaveIcon />
-          </button>
+          <div className="note-footer">
+            <button onClick={handleSave} style={{ color: "#4caf50" }}>
+              <SaveIcon />
+            </button>
+          </div>
         </div>
-      // ... inside the return statement ...
-
-    ) : (
-      // --- VIEW MODE ---
-      <div>
-        <h1>{props.title}</h1>
-        <p>{props.content}</p>
-        
-        {/* A dedicated footer for buttons */}
-        <div className="note-footer">
-          <button onClick={handleEdit}>
-            <EditIcon />
-          </button>
-          <button onClick={handleDelete}>
-            <DeleteIcon />
-          </button>
+      ) : (
+        // --- VIEW MODE ---
+        <div>
+          <h1>{props.title}</h1>
+          <p>{props.content}</p>
+          <div className="note-footer">
+            <button onClick={handleEdit}>
+              <EditIcon />
+            </button>
+            <button onClick={handleDelete}>
+              <DeleteIcon />
+            </button>
+          </div>
         </div>
-
-      </div>
-    )}
-    </div>
+      )}
+    </motion.div>
   );
 }
 export default Note;

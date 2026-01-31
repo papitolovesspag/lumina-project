@@ -54,9 +54,7 @@ header h1 {
   padding: 15px;
   margin-bottom: 20px; /* Spacing for masonry */
   break-inside: avoid; /* Prevents notes from being cut in half */
-  transition: all 0.3s ease;
   position: relative;
-  animation: popIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .note:hover {

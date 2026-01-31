@@ -1,0 +1,17 @@
+# --- Dependencies (Don't upload 200MB of code) ---
+node_modules/
+*/node_modules/
+
+# --- Security (NEVER upload secrets) ---
+.env
+.env.local
+.env.production
+server/.env
+
+# --- Build Outputs ---
+dist/
+build/
+
+# --- System Junk ---
+.DS_Store
+Thumbs.db

@@ -65,6 +65,26 @@ function App() {
     }
   }
 
+  // EDIT NOTE FUNCTION
+  async function editNote(id, newTitle, newContent) {
+    try {
+      const url = `${API_URL}/edit/${id}`;
+      await axios.put(url, { title: newTitle, content: newContent }, authHeader);
+      
+      // Update the UI locally (so we don't have to refresh)
+      setNotes(prevNotes => {
+        return prevNotes.map(note => {
+          if (note.id === id) {
+            return { ...note, title: newTitle, content: newContent };
+          }
+          return note;
+        });
+      });
+    } catch (err) {
+      console.log("Error updating note:", err);
+    }
+  }
+
   return (
     <div>
       <Header isAuth={!!token} onLogout={handleLogout} />
@@ -81,11 +101,12 @@ function App() {
             <AnimatePresence>
               {notes.map((noteItem, index) => (
                 <Note
-                  key={index}
-                  id={index}
+                  key={noteItem.id}
+                  id={noteItem.id}
                   title={noteItem.title}
                   content={noteItem.content}
                   onDelete={deleteNote}
+                  onEdit={editNote}
                 />
               ))}
             </AnimatePresence>

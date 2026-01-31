@@ -56,6 +56,7 @@ header h1 {
   break-inside: avoid; /* Prevents notes from being cut in half */
   transition: all 0.3s ease;
   position: relative;
+  animation: popIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
 .note:hover {
@@ -80,21 +81,37 @@ header h1 {
   line-height: 1.4;
 }
 
+.note.editing {
+  backdrop-filter: none !important; 
+  -webkit-backdrop-filter: none !important;
+  background: rgba(40, 40, 40, 0.95); 
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3); 
+  z-index: 10; 
+  transform: scale(1.02); 
+}
+
+.note-footer {
+  display: flex;
+  justify-content: flex-end; /* Push to right side */
+  align-items: center;
+  gap: 15px; /* SPACE BETWEEN BUTTONS */
+  margin-top: 20px;
+}
+
+/* Common style for BOTH buttons */
 .note button {
-  position: absolute;
-  bottom: 15px;
-  right: 15px;
   background: none;
   border: none;
-  color: #f5ba13;
   cursor: pointer;
   outline: none;
-  padding: 5px;
-  border-radius: 50%;
-  transition: all 0.2s;
+  padding: 0;
+  /* Resetting the color to the theme Gold */
+  color: #f5ba13; 
+  transition: transform 0.2s;
 }
 .note button:hover {
-  background: rgba(245, 186, 19, 0.2);
+  /* background: rgba(245, 186, 19, 0.2); */
+  transform: scale(1.1);
   color: #ffd34e;
 }
 
@@ -152,4 +169,63 @@ footer {
   padding: 20px;
   color: rgba(255, 255, 255, 0.4);
   font-size: 0.8rem;
+}
+
+/* Edit Mode Styles */
+/* EDIT MODE INPUTS */
+.edit-input, 
+.edit-textarea {
+  width: 100%;
+  border: none;
+  
+  /* FIX: Use Solid White instead of transparent rgba */
+  background: #ffffff; 
+  
+  /* FIX: Force the browser to stop blurring this element */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  
+  /* Visuals */
+  padding: 10px;
+  margin-bottom: 10px;
+  font-size: 1.1em;
+  font-weight: bold;
+  border-radius: 8px;
+  outline: none;
+  
+  /* Shadow to make it pop out from the glass card */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  color: #333; /* Ensure text is dark and readable */
+}
+
+.edit-textarea {
+  font-weight: normal; /* Content shouldn't be bold */
+  min-height: 100px;
+  font-family: inherit;
+  resize: vertical; /* Allow user to stretch the box */
+}
+
+.note button:last-child {
+  margin-right: 0;
+}
+
+/* --- ANIMATION FOR NOTES APPEARING --- */
+@keyframes popIn {
+  0% { 
+    transform: scale(0.8) translateY(20px); 
+    opacity: 0; 
+  }
+  100% { 
+    transform: scale(1) translateY(0); 
+    opacity: 1; 
+  }
+}
+
+.edit-input, .edit-textarea {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }

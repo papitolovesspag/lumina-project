@@ -150,6 +150,23 @@ app.post("/notes", verifyToken, async (req, res) => {
   }
 });
 
+// Update a note
+app.put("/edit/:id", async (req, res) => {
+  const id = req.params.id;
+  const { title, content } = req.body;
+
+  try {
+    await db.query(
+      "UPDATE notes SET title = $1, content = $2 WHERE id = $3",
+      [title, content, id]
+    );
+    res.json({ message: "Note updated successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error updating note" });
+  }
+});
+
 // 5. DELETE NOTE (Protected)
 app.delete("/notes/:id", verifyToken, async (req, res) => {
   const id = req.params.id;

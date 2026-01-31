@@ -33,6 +33,36 @@ if (process.env.DATABASE_URL) {
     port: process.env.PG_PORT,
   });
 }
+// --- AUTO-FIX DATABASE 
+const initDb = async () => {
+  try {
+    // 1. Create Users Table if missing
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        email VARCHAR(100) NOT NULL UNIQUE,
+        password VARCHAR(100) NOT NULL
+      );
+    `);
+    
+    // 2. Create Notes Table if missing
+    await db.query(`
+      CREATE TABLE IF NOT EXISTS notes (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(100),
+        content TEXT,
+        user_id INTEGER REFERENCES users(id)
+      );
+    `);
+    console.log("✅ Database initialized successfully");
+  } catch (err) {
+    console.error("❌ Error initializing database:", err);
+  }
+};
+
+// Run the fix immediately
+initDb();
+// ------------------------------------------
 
 // --- AUTHENTICATION MIDDLEWARE ---
 // This acts as a "Bouncer". It checks if the user has a valid Token (JWT).

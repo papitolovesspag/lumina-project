@@ -41,7 +41,7 @@ function App() {
   function addNote(newNote) {
     // 1. Create a temporary ID (so React has a valid key immediately)
     const tempId = Date.now(); 
-    const optimisticNote = { ...newNote, id: tempId };
+    const optimisticNote = { ...newNote, id: tempId, clientId: tempId };
 
     // 2. Add to UI (React uses tempId as the key)
     setNotes((prev) => [...prev, optimisticNote]);
@@ -52,7 +52,7 @@ function App() {
         // 4. When server responds, SWAP the tempId with the real DB id
         setNotes((prev) => prev.map(n => {
            // If this is our temporary note, update it with real data
-           return n.id === tempId ? res.data : n;
+           return n.id === tempId ? { ...res.data, clientId: tempId } : n;
         }));
       })
       .catch((err) => {
@@ -109,7 +109,7 @@ function App() {
             <AnimatePresence>
               {notes.map((noteItem, index) => (
                 <Note
-                  key={noteItem.id}
+                  key={noteItem.clientId || noteItem.id}
                   id={noteItem.id}
                   title={noteItem.title}
                   content={noteItem.content}

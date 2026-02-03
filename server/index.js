@@ -151,7 +151,7 @@ app.post("/notes", verifyToken, async (req, res) => {
 });
 
 // Update a note
-app.put("/edit/:id", async (req, res) => {
+app.put("/edit/:id", verifyToken, async (req, res) => {
   const id = req.params.id;
   const { title, content } = req.body;
 

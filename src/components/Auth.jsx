@@ -12,7 +12,7 @@ import Alert from "@mui/material/Alert";
 
 function Auth(props) {
   const [isLogin, setIsLogin] = useState(true);
-  const [loading, setLoading] = useState(false); // UI: Loading State
+  const [loading, setLoading] = useState(false);
   const [user, setUser] = useState({ email: "", password: "" });
   
   // UI: Notification State
@@ -34,13 +34,12 @@ function Auth(props) {
   async function handleSubmit(event) {
     event.preventDefault();
     
-    // 1. Basic Validation (Don't bother server if empty)
     if (!user.email || !user.password) {
       showToast("Please fill in all fields", "warning");
       return;
     }
 
-    setLoading(true); // Start Spinner
+    setLoading(true);
     const endpoint = isLogin ? "/login" : "/register";
     const url = `${API_URL}${endpoint}`;
 
@@ -49,20 +48,18 @@ function Auth(props) {
       
       if (isLogin) {
         showToast("Login Successful!", "success");
-        // Tiny delay so user sees the success message before screen swap
         setTimeout(() => props.onLogin(response.data.token), 500);
       } else {
         setIsLogin(true);
         showToast("Registration successful! Please log in.", "success");
-        setUser({ email: "", password: "" }); // Clear form
+        setUser({ email: "", password: "" });
       }
     } catch (err) {
       console.error("Auth Error:", err);
-      // specific error message or generic fallback
       const errorMsg = err.response?.data?.error || "Connection Failed. Is Server Running?";
       showToast(errorMsg, "error");
     } finally {
-      setLoading(false); // Stop Spinner
+      setLoading(false);
     }
   }
 
@@ -75,15 +72,15 @@ function Auth(props) {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        minHeight: "80vh", // Changed to minHeight for mobile
+        minHeight: "80vh",
       }}
     >
       <Box
         component="form"
         onSubmit={handleSubmit}
         sx={{
-          background: "rgba(255, 255, 255, 0.05)", // Darker glass
-          backdropFilter: "blur(20px)", // Stronger blur
+          background: "rgba(255, 255, 255, 0.05)",
+          backdropFilter: "blur(20px)",
           padding: "40px",
           borderRadius: "24px",
           border: "1px solid rgba(255, 255, 255, 0.1)",
@@ -135,6 +132,7 @@ function Auth(props) {
           }}
         />
 
+        {/* PRIMARY ACTION BUTTON */}
         <Button
           type="submit"
           variant="contained"
@@ -154,17 +152,34 @@ function Auth(props) {
           {loading ? <CircularProgress size={24} color="inherit" /> : (isLogin ? "Log In" : "Create Account")}
         </Button>
 
+        {/* RE-STYLED SWITCH BUTTON (High Visibility) */}
         <Button
           onClick={() => setIsLogin(!isLogin)}
-          sx={{ color: "rgba(255,255,255,0.5)", textTransform: "none", fontSize: "0.9rem" }}
+          variant="outlined"
+          sx={{ 
+            color: "#f5ba13", 
+            borderColor: "rgba(245, 186, 19, 0.5)",
+            textTransform: "none", 
+            fontSize: "0.95rem",
+            mt: 1,
+            "&:hover": {
+              borderColor: "#f5ba13",
+              background: "rgba(245, 186, 19, 0.1)"
+            }
+          }}
         >
-          {isLogin ? "Need an account? Sign up" : "Have an account? Log in"}
+          {isLogin ? "New here? Create an Account" : "Already have an account? Log in"}
         </Button>
       </Box>
 
-      {/* ERROR / SUCCESS TOAST */}
-      <Snackbar open={toast.open} autoHideDuration={6000} onClose={handleCloseToast}>
-        <Alert onClose={handleCloseToast} severity={toast.severity} sx={{ width: '100%' }}>
+      {/* ERROR / SUCCESS TOAST - MOVED TO TOP */}
+      <Snackbar 
+        open={toast.open} 
+        autoHideDuration={6000} 
+        onClose={handleCloseToast}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }} // <--- THIS FIXES THE MOBILE KEYBOARD ISSUE
+      >
+        <Alert onClose={handleCloseToast} severity={toast.severity} sx={{ width: '100%', fontWeight: 'bold' }}>
           {toast.message}
         </Alert>
       </Snackbar>

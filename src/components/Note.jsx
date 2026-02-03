@@ -1,20 +1,40 @@
 import React, { useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { motion } from "framer-motion";
-import EditIcon from "@mui/icons-material/Edit"; // Import Pencil Icon
-import SaveIcon from "@mui/icons-material/Save"; // Import Save Icon
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
+
+// NEW IMPORTS FOR DIALOG
+import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 
 function Note(props) {
   const [isEditing, setIsEditing] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false); // State for the popup
   
-  // Temporary state for typing
   const [note, setNote] = useState({
     title: props.title,
     content: props.content
   });
 
-  function handleDelete() {
+  // 1. User Clicks Trash Icon -> Open Dialog
+  function handleDeleteClick() {
+    setOpenDialog(true);
+  }
+
+  // 2. User Clicks "Yes, Delete" -> Actually Delete
+  function handleConfirmDelete() {
     props.onDelete(props.id);
+    setOpenDialog(false);
+  }
+
+  // 3. User Clicks "Cancel" -> Close Dialog
+  function handleCloseDialog() {
+    setOpenDialog(false);
   }
 
   function handleEdit() {
@@ -22,8 +42,8 @@ function Note(props) {
   }
 
   function handleSave() {
-    props.onEdit(props.id, note.title, note.content); // Send to App.jsx
-    setIsEditing(false); // Switch back to View Mode
+    props.onEdit(props.id, note.title, note.content);
+    setIsEditing(false);
   }
 
   function handleChange(event) {
@@ -35,14 +55,15 @@ function Note(props) {
   }
 
   return (
+    <>
     <motion.div
-  layout
-  initial={{ opacity: 0, scale: 0.8 }}
-  animate={{ opacity: 1, scale: 1 }}
-  exit={{ opacity: 0, scale: 0.5 }}
-  transition={{ type: "spring", stiffness: 500, damping: 30 }} // Snappy but smooth
-  className={`note ${isEditing ? "editing" : ""}`}
->
+      layout
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.5 }}
+      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+      className={`note ${isEditing ? "editing" : ""}`}
+    >
       {isEditing ? (
         // --- EDIT MODE ---
         <div>
@@ -74,13 +95,47 @@ function Note(props) {
             <button onClick={handleEdit}>
               <EditIcon />
             </button>
-            <button onClick={handleDelete}>
+            <button onClick={handleDeleteClick}> {/* CHANGED TO OPEN DIALOG */}
               <DeleteIcon />
             </button>
           </div>
         </div>
       )}
     </motion.div>
+
+    {/* --- DELETE CONFIRMATION POPUP --- */}
+    <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        PaperProps={{
+          style: {
+            backgroundColor: "rgba(30, 30, 30, 0.95)", // Dark theme to match Lumina
+            color: "white",
+            borderRadius: "15px",
+            border: "1px solid rgba(255,255,255,0.1)"
+          },
+        }}
+      >
+        <DialogTitle id="alert-dialog-title" sx={{ fontFamily: "McLaren", color: "#f5ba13" }}>
+          {"Delete this note?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description" sx={{ color: "rgba(255,255,255,0.7)" }}>
+            Are you sure you want to delete <strong>"{props.title}"</strong>? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ padding: "16px" }}>
+          <Button onClick={handleCloseDialog} sx={{ color: "white" }}>
+            No, Cancel
+          </Button>
+          <Button onClick={handleConfirmDelete} sx={{ color: "#ff4444", fontWeight: "bold" }} autoFocus>
+            Yes, Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
 export default Note;
